@@ -1,13 +1,9 @@
-#!/usr/bin/python3
-
 import pygame as pg
-import numpy as np
 import random
 import sys
 
 window_w = 800
 window_h = 800
-size = 40
 col = 20
 row = 20
 #init grid
@@ -22,15 +18,22 @@ for i in range(col):
 
 class Cell():
     def __init__(self, x, y, value):
-        self.x = x * col
-        self.y = y * row
+        self.x = x
+        self.y = y
         self.id = value
-    def print(self, x, y, surface, window):
-        sqr = pg.Rect(x * int(window_w/col), y * int(window_h/row), int(window_w/col), int(window_h/row))
+        self.printed = 0
+    def print(self, surface, window):
+        sqr = pg.Rect(self.x * int(window_w/col), self.y * int(window_h/row), int(window_w/col), int(window_h/row))
         pg.draw.rect(surface, (0, 190, 0), sqr)
-    def unprint(self, x, y, surface, window):
-        sqr = pg.Rect(x * int(window_w/col), y * int(window_h/row), int(window_w/col), int(window_h/row))
+        self.printed = 1
+    def unprint(self, surface, window):
+        sqr = pg.Rect(self.x * int(window_w/col), self.y * int(window_h/row), int(window_w/col), int(window_h/row))
         pg.draw.rect(surface, (0, 0, 0), sqr)
+        self.printed = 0
+    def g(self, i, j, start): #distance from current node to start node
+        return (i - start[0] + j - start[1])
+    def h(self, i, j, end): #heuristic - distance from node to end node
+        return (pow(i - start[0], 2) + pow(j - start[1], 2))
 
 def run_program(start, finish):
     pass
@@ -63,10 +66,13 @@ def random_cell(surface, window):
 
     for i in range(col):
         for j in range(row):
-            grid[i][j].unprint(i, j, surface, window)
+            if grid[i][j].printed == 1:
+                grid[i][j].unprint(surface, window)
     
-    grid[0][0].print(r_x1, r_y1, surface, window)
-    grid[0][0].print(r_x2, r_y2, surface, window)
+    grid[r_x1][r_y1].print(surface, window)
+    grid[r_x2][r_y2].print(surface, window)
+    #grid[0][0].print(r_x1, r_y1, surface, window)
+    #grid[0][0].print(r_x2, r_y2, surface, window)
     return (r_x1, r_y1), (r_x2, r_y2)
 #create cells with their value
 for i in range(col):
@@ -81,8 +87,8 @@ def main():
     clock = pg.time.Clock()
     clock.tick(60)
     while True:
-        draw_grid(surface, window)
         handle_input(surface, window)
+        draw_grid(surface, window)
         window.blit(surface, (0, 0))
         pg.display.update()
         
