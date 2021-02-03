@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import pygame as pg
 import random
 import math
@@ -27,7 +25,7 @@ class Cell():
         self.walkable = 0
     def print_path(self, surface, window): #print orange sqr in grid (path)
         sqr = pg.Rect(self.x * int(window_w/col), self.y * int(window_h/row), int(window_w/col), int(window_h/row))
-        pg.draw.rect(surface, (183, 133, 32), sqr)
+        pg.draw.rect(surface, (255, 100, 32), sqr)
         self.printed = 1
         self.walkable = 0
     def unprint(self, surface, window): #unprint sqr from grid
@@ -37,7 +35,7 @@ class Cell():
     def comp_g(self, start): #distance from current node to start node
         return (self.x - start[0] + self.y - start[1])
     def comp_h(self, end): #heuristic - distance from current node to end node
-        return (math.sqrt(pow(self.x - start[0], 2) + pow(self.y - start[1], 2)))
+        return (math.sqrt(pow(self.x - end[0], 2) + pow(self.y - end[1], 2)))
     def comp_f(self, start, end): #total cost of the node
         return (self.comp_g(start) + self.comp_h(end))
 
@@ -61,52 +59,65 @@ for i in range(col):
     for j in range(row):
         grid[i][j] = Cell(i, j)
 
-def get_path(start, end): #compute and print path from start to end
+def get_path(start, end, surface, window): #compute and print path from start to end
     global openList
     global closedList
     global path
+    global grid
+    print('start:', start)
+    print('end:', end)
     start_node = Cell(start[0], start[1])
     end_node = Cell(end[0], end[1])
     openList.append(start_node)
     current_node = openList[0]
     current_indx = 0
-    for indx, item in enumerate(openList): #checks openList for available nodes
-        item.f = item.comp_f(start, end)
-        current_node.f = current_node.comp_f(start, end)
-        if item.f < current_node.f: #node on the list has a better f value than current node
-            current_node = item
-            current_indx = indx
+
+    while len(openList) > 0:
+        current_node = openList[0]
+        current_indx = 0
+        for indx, item in enumerate(openList): #checks openList for available nodes
+            item.f = item.comp_f(start, end)
+            current_node.f = current_node.comp_f(start, end)
+            if item.f < current_node.f: #node on the list has a better f value than current node
+                current_node = item
+                current_indx = indx
         openList.pop(current_indx) #delete current node from the open list
         closedList.append(current_node) #add current node to the closed list
+        current_node.print_path(surface, window)
         print(current_node.position)
         if current_node.position == end_node.position: #reached end cell - finished
+            print("SOLVED")
             current = current_node
             while current is not None:
+                current = current_node
                 path.append(current)
-                current.print_path()
-                print("one block")
-                current = current.parent
+                current_node.print_path(surface, window)
+                current_node = current_node.parent
             return (path[::-1]) #inversed path
         children = []
         for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # cells surrounding current node
             node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
             if node_position[0] > (len(grid) - 1) or node_position[0] < 0 or node_position[1] > (len(grid[len(grid)-1]) -1) or node_position[1] < 0: #check grid bounds
-                continue
+                break
             if grid[node_position[0]][node_position[1]].walkable == 1:
-                continue
+                break
+            if current_node in closedList:
+                break
             new_node = Cell(node_position[0], node_position[1])
             children.append(new_node)
-        for child in children: #check child list
-            for closed_child in closedList: #check if child is in the closed list
-                if child.position == closed_child.position:
-                    continue
-            child.g = child.comp_g(start)
-            child.h = child.comp_h(end)
-            child.f = child.comp_f(start, end)
-            for open_node in openList: #check if child is in open list
-                if child.position == open_node.position and child.g > open_node.g:
-                    continue
-            openList.append(child)
+        for child in children: #loops through children
+            for closed_child in closedList:
+                if child == closed_child: #child in the closed list
+                    break
+            else: #child not closed
+                child.g = child.comp_g(start)
+                child.h = child.comp_h(end)
+                child.f = child.comp_f(start, end)
+            for open_node in openList:
+                if child == open_node and child.g >= open_node.g: #check for better value
+                    break
+            else:
+                openList.append(child) #better node found
         
 def handle_input(surface, window):
     global run
@@ -124,7 +135,7 @@ def handle_input(surface, window):
                 run = 1
             if run == 1 and event.key == pg.K_RETURN: #find path from current generated path
                 print("FINDING PATH...")
-                path = get_path(start, end)
+                path = get_path(start, end, surface, window)
                 print("PATH FOUND")
 
 def draw_grid(surface, window): #draw grid lines
