@@ -76,8 +76,8 @@ def get_path(start, end, surface, window): #compute and print path from start to
         current_node = openList[0]
         current_indx = 0
         for indx, item in enumerate(openList): #checks openList for available nodes
-            item.f = item.comp_f(start, end)
-            current_node.f = current_node.comp_f(start, end)
+            print("potential node:", item.g, item.position, "start:", start_node.position, "end:", end_node.position)
+            print("current node  :", current_node.g, current_node.position, "start:", start_node.position, "end:", end_node.position)
             if item.f < current_node.f: #node on the list has a better f value than current node
                 current_node = item
                 current_indx = indx
@@ -91,30 +91,33 @@ def get_path(start, end, surface, window): #compute and print path from start to
             while current is not None:
                 current = current_node
                 path.append(current)
-                current_node.print_path(surface, window)
-                current_node = current_node.parent
+                current.print_path(surface, window)
+                current = current.parent
             return (path[::-1]) #inversed path
         children = []
         for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # cells surrounding current node
             node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
             if node_position[0] > (len(grid) - 1) or node_position[0] < 0 or node_position[1] > (len(grid[len(grid)-1]) -1) or node_position[1] < 0: #check grid bounds
-                break
-            if grid[node_position[0]][node_position[1]].walkable == 1:
-                break
-            if current_node in closedList:
-                break
+                print("out of bounds")
+                continue
+            if grid[node_position[0]][node_position[1]].walkable == 0:
+                print("not walkable")
+                continue
             new_node = Cell(node_position[0], node_position[1])
+            print(new_node.position)
             children.append(new_node)
         for child in children: #loops through children
             for closed_child in closedList:
                 if child == closed_child: #child in the closed list
+                    print("child in closed child list")
                     break
             else: #child not closed
-                child.g = child.comp_g(start)
-                child.h = child.comp_h(end)
-                child.f = child.comp_f(start, end)
+                child.g = current_node.g + 1
+                child.h = math.sqrt(((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2))
+                child.f = child.g + child.h
             for open_node in openList:
-                if child == open_node and child.g >= open_node.g: #check for better value
+                if child == open_node and child.g >= open_node.g: #child in openList
+                    print("child in open list")
                     break
             else:
                 openList.append(child) #better node found
