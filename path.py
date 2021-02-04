@@ -1,15 +1,17 @@
+#!/usr/bin/python3
+
 import pygame as pg
 import random
 import math
 import sys
 
 class Cell():
-    def __init__(self, x, y):
+    def __init__(self, x, y, parent=None):
         self.x = x
         self.y = y
         self.printed = 0
         self.walkable = 1
-        self.parent = (x, y)
+        self.parent = parent
         self.position = (x, y)
         self.g = 0
         self.h = 0
@@ -83,13 +85,11 @@ def get_path(start, end, surface, window): #compute and print path from start to
                 current_indx = indx
         openList.pop(current_indx) #delete current node from the open list
         closedList.append(current_node) #add current node to the closed list
-        current_node.print_path(surface, window)
         print(current_node.position)
         if current_node.position == end_node.position: #reached end cell - finished
             print("SOLVED")
             current = current_node
             while current is not None:
-                current = current_node
                 path.append(current)
                 current.print_path(surface, window)
                 current = current.parent
@@ -103,7 +103,7 @@ def get_path(start, end, surface, window): #compute and print path from start to
             if grid[node_position[0]][node_position[1]].walkable == 0:
                 print("not walkable")
                 continue
-            new_node = Cell(node_position[0], node_position[1])
+            new_node = Cell(node_position[0], node_position[1], current_node)
             print(new_node.position)
             children.append(new_node)
         for child in children: #loops through children
