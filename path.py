@@ -101,7 +101,7 @@ def get_path(start, end, surface, window): #compute and print path from start to
                 continue
             if grid[node_position[0]][node_position[1]].walkable == 0:
                 continue
-            if Cell(node_position[0], node_position[1], current_node) in closedList: 
+            if Cell(node_position[0], node_position[1], current_node) in closedList:
                 continue
             new_node = Cell(node_position[0], node_position[1], current_node)
             children.append(new_node)
@@ -118,7 +118,7 @@ def get_path(start, end, surface, window): #compute and print path from start to
                     break
             else:
                 openList.append(child) #better node found
-        
+
 def handle_input(surface, window):
     global run
     global start
