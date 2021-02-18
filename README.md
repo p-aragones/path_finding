@@ -7,3 +7,7 @@ INSTRUCTIONS:
 REQUISITES:
  - pygame
  - python3
+ 
+![](./readMe/map.png)
+
+![](./readMe/map_solved.png)
