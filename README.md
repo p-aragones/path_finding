@@ -7,7 +7,11 @@ INSTRUCTIONS:
 REQUISITES:
  - pygame
  - python3
- 
+
+ Known bugs:
+- when generating new grid, it may try to find the previous start and end
+- can get stuck when previous start or end points are now blocked by obstacles, making it impossible to reach end goal
+
 ![](./readMe/map.png)
 
 ![](./readMe/map_solved.png)
