@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from src.cell import *
 from src.algo import *
 from src.grid import *

@@ -52,7 +52,7 @@ def get_path(start, end, surface, window): #compute and print path from start to
                 child.h = math.sqrt(((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2))
                 child.f = child.g + child.h
             for open_node in openList:
-                if child == open_node and child.g >= open_node.g: #child in openList
+                if child == open_node and child.f >= open_node.f: #child in openList
                     break
             else:
                 openList.append(child) #better node found
