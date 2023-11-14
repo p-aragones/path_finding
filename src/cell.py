@@ -18,6 +18,7 @@ class Cell():
         sqr = pg.Rect(self.x * int(window_w/col), self.y * int(window_h/row), int(window_w/col), int(window_h/row))
         pg.draw.rect(surface, (0, 190, 0), sqr)
         self.printed = 1
+        self.walkable = 1
     def print_wall(self, surface, window): #print blue sqr in grid (wall)
         sqr = pg.Rect(self.x * int(window_w/col), self.y * int(window_h/row), int(window_w/col), int(window_h/row))
         pg.draw.rect(surface, (31, 133, 183), sqr)
@@ -28,6 +29,10 @@ class Cell():
         pg.draw.rect(surface, (255, 100, 32), sqr)
         self.printed = 1
         self.walkable = 0
+    def print_explored(self, surface, window):
+        sqr = pg.Rect(self.x * int(window_w/col), self.y * int(window_h/row), int(window_w/col), int(window_h/row))
+        pg.draw.rect(surface, (100, 100, 100), sqr)
+        self.printed = 1
     def unprint(self, surface, window): #unprint sqr from grid
         sqr = pg.Rect(self.x * int(window_w/col), self.y * int(window_h/row), int(window_w/col), int(window_h/row))
         pg.draw.rect(surface, (0, 0, 0), sqr)
